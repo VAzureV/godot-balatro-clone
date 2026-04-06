@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://pqt1s1o5iedk"]
+
+[ext_resource type="Texture2D" uid="uid://bnkopqtnmkh6w" path="res://assets/textures/1x/balatro.png" id="1_06t4h"]
+
+[node name="MainMenu" type="Control" unique_id=1972831798]
+texture_filter = 1
+custom_minimum_size = Vector2(640, 360)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackgroundColorRect" type="ColorRect" parent="." unique_id=658090770]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0.03137255, 1)
+
+[node name="TitleTexture" type="TextureRect" parent="." unique_id=455353882]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -166.5
+offset_right = 166.5
+offset_bottom = 216.0
+grow_horizontal = 2
+texture = ExtResource("1_06t4h")
