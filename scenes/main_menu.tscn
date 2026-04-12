@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://pqt1s1o5iedk"]
 
-[ext_resource type="Texture2D" uid="uid://bnkopqtnmkh6w" path="res://assets/textures/1x/balatro.png" id="1_06t4h"]
+[ext_resource type="Script" uid="uid://j3scrhf3h3fc" path="res://scenes/main_menu.gd" id="1_bqqt6"]
+[ext_resource type="AudioStream" uid="uid://b6xeo58op8nuq" path="res://assets/sounds/music1.ogg" id="2_wu84c"]
+[ext_resource type="Texture2D" uid="uid://bnkopqtnmkh6w" path="res://assets/textures/1x/balatro.png" id="3_8ln24"]
 
 [node name="MainMenu" type="Control" unique_id=1972831798]
 texture_filter = 1
@@ -11,6 +13,8 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_bqqt6")
+background_music = ExtResource("2_wu84c")
 
 [node name="BackgroundColorRect" type="ColorRect" parent="." unique_id=658090770]
 layout_mode = 1
@@ -34,4 +38,4 @@ offset_right = 166.5
 offset_bottom = 76.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("1_06t4h")
+texture = ExtResource("3_8ln24")
