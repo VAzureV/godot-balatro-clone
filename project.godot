@@ -14,6 +14,10 @@ config/name="balatro"
 run/main_scene="uid://pqt1s1o5iedk"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 
+[autoload]
+
+GlobalEvent="*uid://bf4c3peyk8m3j"
+
 [display]
 
 window/size/viewport_width=640
