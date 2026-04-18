@@ -1,6 +1,7 @@
 extends Control
 
-@export var background_music: AudioStream = null
-
 func _ready() -> void:
-	MusicManger.playBackgroundMusic(background_music)
+	MusicManager.play_music(MusicManager.MusicType.MAIN_MENU)
+
+func _on_start_button_button_down() -> void:
+	MusicManager.play_sfx(MusicManager.SFXType.CLICK)

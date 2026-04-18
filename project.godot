@@ -17,7 +17,7 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 [autoload]
 
 GlobalEvent="*uid://bf4c3peyk8m3j"
-MusicManger="*uid://duox38a78cc8t"
+MusicManager="*uid://duox38a78cc8t"
 
 [display]
 
@@ -25,8 +25,12 @@ window/size/viewport_width=640
 window/size/viewport_height=360
 window/size/window_width_override=1920
 window/size/window_height_override=1080
-window/stretch/mode="viewport"
+window/stretch/mode="canvas_items"
 window/stretch/scale_mode="integer"
+
+[gui]
+
+theme/custom="uid://dcfl7nxb6ck3w"
 
 [physics]
 
