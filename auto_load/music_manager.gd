@@ -13,10 +13,10 @@ enum SFXType {
 @export var default_sfx_volume_db: float = -8.0
 
 @export var music_config: Dictionary = {
-	MusicType.MAIN_MENU: preload("res://assets/sounds/music1.ogg"),
+	MusicType.MAIN_MENU: preload("res://asset/sounds/music1.ogg"),
 }
 @export var sfx_config: Dictionary = {
-	SFXType.CLICK: preload("res://assets/sounds/button.ogg"),
+	SFXType.CLICK: preload("res://asset/sounds/button.ogg"),
 }
 
 @onready var current_player: AudioStreamPlayer = $AudioStreamPlayer

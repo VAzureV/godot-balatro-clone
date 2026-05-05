@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://dbvtdxwlgp0r1"]
+
+[node name="MusicSetting" type="Control" unique_id=1709421484]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1196452872]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=1391889174]
+layout_mode = 2
+theme_override_constants/margin_left = 140
+theme_override_constants/margin_top = 60
+theme_override_constants/margin_right = 140
+theme_override_constants/margin_bottom = 60
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer/MarginContainer" unique_id=1262841269]
+layout_mode = 2
+columns = 2
+
+[node name="TotalVolLabel" type="Label" parent="PanelContainer/MarginContainer/GridContainer" unique_id=1811112311]
+layout_mode = 2
+text = "总音量"
+
+[node name="TotalVolHSlider" type="HSlider" parent="PanelContainer/MarginContainer/GridContainer" unique_id=621873211]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+
+[node name="MusicVolLabel" type="Label" parent="PanelContainer/MarginContainer/GridContainer" unique_id=1385484768]
+layout_mode = 2
+text = "音乐"
+
+[node name="MusicVolHSlider" type="HSlider" parent="PanelContainer/MarginContainer/GridContainer" unique_id=2071790260]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+
+[node name="SFXVolLabel" type="Label" parent="PanelContainer/MarginContainer/GridContainer" unique_id=356811349]
+layout_mode = 2
+text = "音效"
+
+[node name="SFXVolHSlider" type="HSlider" parent="PanelContainer/MarginContainer/GridContainer" unique_id=46181652]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
