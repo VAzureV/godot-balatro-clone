@@ -5,11 +5,6 @@
 
 [node name="MusicManger" type="Node2D" unique_id=1182808855]
 script = ExtResource("1_pxcw7")
-fade_time = null
-default_music_volume_db = null
-default_sfx_volume_db = null
-music_config = null
-sfx_config = null
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1893645558]
 stream = ExtResource("1_ud1tx")

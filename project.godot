@@ -17,6 +17,7 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 [autoload]
 
 GlobalEvent="*uid://bf4c3peyk8m3j"
+LocalDataManager="*uid://d0gtoe63kgh84"
 MusicManager="*uid://duox38a78cc8t"
 
 [display]

@@ -21,14 +21,41 @@ enum SFXType {
 
 @onready var current_player: AudioStreamPlayer = $AudioStreamPlayer
 
+# 功能：将线性音量安全转换为 dB；0 音量时返回静音值。
+# 传入参数：
+# - linear_value: 0.0 到 1.0 的线性音量值。
+# 返回值：
+# - 对应的 dB 音量值。
+func _linear_to_db_safe(linear_value: float) -> float:
+	if linear_value <= 0.0:
+		return -80.0
+	return linear_to_db(maxf(linear_value, 0.001))
+
+# 功能：根据当前设置计算背景音乐的实际音量。
+# 返回值：
+# - 当前背景音乐应使用的 dB 音量值。
+func _get_music_volume_db() -> float:
+	return _linear_to_db_safe(LocalDataManager.master_volume_factor * LocalDataManager.music_volume)
+
+# 功能：根据当前设置计算音效的实际音量。
+# 返回值：
+# - 当前音效应使用的 dB 音量值。
+func _get_sfx_volume_db() -> float:
+	return _linear_to_db_safe(LocalDataManager.master_volume_factor * LocalDataManager.sfx_volume)
+
+# 功能：同步当前背景音乐播放器的音量设置。
 func _ready() -> void:
-	current_player.volume_db = default_music_volume_db
+	current_player.volume_db = _get_music_volume_db()
+	LocalDataManager.volumes_changed.connect(_on_volumes_changed)
+
+# 功能：当本地音量设置变化时，刷新当前背景音乐播放器音量。
+func _on_volumes_changed() -> void:
+	current_player.volume_db = _get_music_volume_db()
 
 # 功能：根据 MusicType 播放背景音乐；有正在播放的音乐时执行淡入淡出切换。
 # 传入参数：
 # - music_type: 背景音乐枚举类型，用于从 music_config 中查找资源。
 # - _fade_time: 淡入淡出时长（秒），小于等于 0 时直接切换。
-# 返回值：无。
 func play_music(music_type: MusicType, _fade_time: float = fade_time) -> void:
 	if not music_config.has(music_type):
 		push_warning("MusicManager: music_config 未配置 music_type=%s" % [music_type])
@@ -39,23 +66,24 @@ func play_music(music_type: MusicType, _fade_time: float = fade_time) -> void:
 		push_warning("MusicManager: music_config[music_type] 不是 AudioStream")
 		return
 
+	var target_volume_db := _get_music_volume_db()
+
 	if current_player.stream == null or not current_player.playing or _fade_time <= 0.0:
 		current_player.stream = new_song
-		current_player.volume_db = default_music_volume_db
+		current_player.volume_db = target_volume_db
 		current_player.play()
 		return
 
 	var new_player := AudioStreamPlayer.new()
 	new_player.stream = new_song
-	new_player.volume_db = linear_to_db(0.1)
+	new_player.volume_db = _linear_to_db_safe(0.0)
 	add_child(new_player)
 	new_player.play()
 	new_player.seek(current_player.get_playback_position())
 
-	var target_volume := current_player.volume_db
 	var tween := create_tween()
-	tween.tween_property(current_player, "volume_db", linear_to_db(0.0), _fade_time)
-	tween.parallel().tween_property(new_player, "volume_db", target_volume, _fade_time)
+	tween.tween_property(current_player, "volume_db", _linear_to_db_safe(0.0), _fade_time)
+	tween.parallel().tween_property(new_player, "volume_db", target_volume_db, _fade_time)
 	await tween.finished
 
 	current_player.queue_free()
@@ -64,7 +92,6 @@ func play_music(music_type: MusicType, _fade_time: float = fade_time) -> void:
 # 功能：根据 SFXType 播放一次性音效，播放结束后自动释放播放器节点。
 # 传入参数：
 # - sfx_type: 音效枚举类型，用于从 sfx_config 中查找资源。
-# 返回值：无。
 func play_sfx(sfx_type: SFXType) -> void:
 	if not sfx_config.has(sfx_type):
 		push_warning("MusicManager: sfx_config 未配置 sfx_type=%s" % [sfx_type])
@@ -77,7 +104,7 @@ func play_sfx(sfx_type: SFXType) -> void:
 
 	var sfx_player := AudioStreamPlayer.new()
 	sfx_player.stream = stream
-	sfx_player.volume_db = default_sfx_volume_db
+	sfx_player.volume_db = _get_sfx_volume_db()
 	add_child(sfx_player)
 	sfx_player.finished.connect(sfx_player.queue_free)
 	sfx_player.play()
