@@ -1,19 +1,39 @@
 extends Node
 
-signal volumes_changed
-
 const SAVE_PATH := "user://local_data.cfg"
 const DEFAULT_MASTER_VOLUME_FACTOR := 0.5
 const DEFAULT_MUSIC_VOLUME := 0.5
 const DEFAULT_SFX_VOLUME := 0.5
 
-var master_volume_factor: float = DEFAULT_MASTER_VOLUME_FACTOR
-var music_volume: float = DEFAULT_MUSIC_VOLUME
-var sfx_volume: float = DEFAULT_SFX_VOLUME
-
 # 功能：初始化本地数据管理器，并从本地加载已保存的数据。
 func _ready() -> void:
 	load_data()
+
+# 功能：从本地文件中读取指定 section 和 key 对应的数据。
+# 传入参数：
+# - section: 配置分区名。
+# - key: 配置字段名。
+# - default_value: 配置缺失时使用的默认值。
+# 返回值：
+# - 对应的本地配置值；若不存在则返回默认值。
+func get_local_data(section: String, key: String, default_value: Variant = null) -> Variant:
+	var config := ConfigFile.new()
+	var err := config.load(SAVE_PATH)
+	if err != OK:
+		return default_value
+
+	return config.get_value(section, key, default_value)
+
+# 功能：将指定 section 和 key 对应的数据写入本地文件，不影响其他字段。
+# 传入参数：
+# - section: 配置分区名。
+# - key: 配置字段名。
+# - value: 需要写入的本地配置值。
+func set_local_data(section: String, key: String, value: Variant) -> void:
+	var config := ConfigFile.new()
+	config.load(SAVE_PATH)
+	config.set_value(section, key, value)
+	config.save(SAVE_PATH)
 
 # 功能：从本地文件读取数据；若文件不存在则写入默认值。
 func load_data() -> void:
@@ -21,45 +41,14 @@ func load_data() -> void:
 	var err := config.load(SAVE_PATH)
 	if err != OK:
 		save_data()
-		volumes_changed.emit()
-		return
 
-	master_volume_factor = clampf(float(config.get_value("audio", "master_volume_factor", DEFAULT_MASTER_VOLUME_FACTOR)), 0.0, 1.0)
-	music_volume = clampf(float(config.get_value("audio", "music_volume", DEFAULT_MUSIC_VOLUME)), 0.0, 1.0)
-	sfx_volume = clampf(float(config.get_value("audio", "sfx_volume", DEFAULT_SFX_VOLUME)), 0.0, 1.0)
-	volumes_changed.emit()
-
-# 功能：将当前本地数据写入文件。
+# 功能：将默认本地数据整批写入文件，主要用于初始化默认配置。
 func save_data() -> void:
 	var config := ConfigFile.new()
-	config.set_value("audio", "master_volume_factor", master_volume_factor)
-	config.set_value("audio", "music_volume", music_volume)
-	config.set_value("audio", "sfx_volume", sfx_volume)
+	config.set_value(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MASTER_VOLUME_FACTOR, DEFAULT_MASTER_VOLUME_FACTOR)
+	config.set_value(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MUSIC_VOLUME, DEFAULT_MUSIC_VOLUME)
+	config.set_value(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_SFX_VOLUME, DEFAULT_SFX_VOLUME)
 	config.save(SAVE_PATH)
-
-# 功能：设置总音量因子并保存到本地。
-# 传入参数：
-# - value: 0.0 到 1.0 的线性因子值，会同时作用于音乐和音效。
-func set_master_volume_factor(value: float) -> void:
-	master_volume_factor = clampf(value, 0.0, 1.0)
-	save_data()
-	volumes_changed.emit()
-
-# 功能：设置音乐音量并保存到本地。
-# 传入参数：
-# - value: 0.0 到 1.0 的线性音量值。
-func set_music_volume(value: float) -> void:
-	music_volume = clampf(value, 0.0, 1.0)
-	save_data()
-	volumes_changed.emit()
-
-# 功能：设置音效音量并保存到本地。
-# 传入参数：
-# - value: 0.0 到 1.0 的线性音量值。
-func set_sfx_volume(value: float) -> void:
-	sfx_volume = clampf(value, 0.0, 1.0)
-	save_data()
-	volumes_changed.emit()
 
 # 功能：清除指定 section 下的某个本地数据项，用于测试缺省值回退逻辑。
 # 传入参数：
@@ -76,10 +65,8 @@ func clear_data_item(section: String, key: String) -> void:
 
 	config.erase_section_key(section, key)
 	config.save(SAVE_PATH)
-	load_data()
 
 # 功能：清除整个本地数据文件，用于测试首次启动或无存档场景。
 func clear_all_data() -> void:
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(SAVE_PATH))
-	load_data()

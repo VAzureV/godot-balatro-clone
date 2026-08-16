@@ -7,7 +7,7 @@
 - 负责读取本地存档配置
 - 负责保存本地配置到磁盘
 - 对外提供统一的数据读写接口
-- 在数据变化时通过信号通知其他模块刷新
+- 不负责运行时状态同步，只处理本地数据存取
 
 ## 2. 当前管理的数据
 
@@ -33,6 +33,7 @@
 
 - 本地文件路径：`user://local_data.cfg`
 - 当前使用 `ConfigFile` 存储
+- `section` 与 `key` 常量统一定义在 `auto_load/local_data_keys.gd`
 
 示例内容：
 
@@ -50,8 +51,13 @@ sfx_volume=1.0
 - `load_data()`
   - 从本地文件读取配置
   - 文件不存在时自动写入默认值
+- `get_local_data(section: String, key: String, default_value: Variant = null)`
+  - 读取指定 section 和 key 对应的本地数据
+- `set_local_data(section: String, key: String, value: Variant)`
+  - 写入指定 section 和 key 对应的本地数据
 - `save_data()`
-  - 将当前内存中的配置写入本地文件
+  - 将默认本地配置整批写入文件
+  - 主要用于首次创建默认配置或需要整份重建本地文件的场景
 - `clear_data_item(section: String, key: String)`
   - 清除指定 section 下的某个配置项
   - 常用于测试字段缺失时的默认值回退逻辑
@@ -59,35 +65,36 @@ sfx_volume=1.0
   - 清除整个本地数据文件
   - 常用于测试首次启动或无本地存档场景
 
-### 音量设置
+### 常量表
 
-- `set_master_volume_factor(value: float)`
-  - 设置总音量因子并保存
-- `set_music_volume(value: float)`
-  - 设置音乐音量并保存
-- `set_sfx_volume(value: float)`
-  - 设置音效音量并保存
+- `LocalDataKeys`
+  - 统一管理本地存储中用到的 `section` 与 `key`
+  - 用于避免在 `LocalDataManager` 中散落硬编码字符串
+  - 当前已定义：
+    - `SECTION_AUDIO`
+    - `KEY_MASTER_VOLUME_FACTOR`
+    - `KEY_MUSIC_VOLUME`
+    - `KEY_SFX_VOLUME`
 
-### 信号
+### 公共存取方法
 
-- `volumes_changed`
-  - 当音量相关数据变化时发出
-  - 用于通知界面和音频模块刷新显示或重新计算音量
+- `get_local_data(section, key, default_value)`
+  - 通用读取入口
+- `set_local_data(section, key, value)`
+  - 通用写入入口
 
 ## 5. 当前接入关系
 
 ### 与 `MusicManager` 的关系
 
 - `MusicManager` 通过 `LocalDataManager` 读取当前音量配置
-- `MusicManager` 监听 `volumes_changed`
-- 当音量变化时，会刷新当前背景音乐播放器音量
+- 当界面修改本地音量配置后，`MusicManager` 再主动刷新当前背景音乐音量
 - 播放新的音效时，也会按最新配置计算音量
 
 ### 与 `music_setting` 面板的关系
 
 - `music_setting.gd` 在 `_ready()` 时读取 `LocalDataManager` 中的数据初始化滑条
 - 用户拖动滑条后，通过 `LocalDataManager` 保存配置
-- 若音量被其他地方修改，面板会通过 `volumes_changed` 同步刷新
 - 当前界面滑条范围与本地存储统一使用 `0.0 ~ 1.0`，不再做百分比换算
 
 ## 6. 使用示例
@@ -95,25 +102,37 @@ sfx_volume=1.0
 设置音乐音量：
 
 ```gdscript
-LocalDataManager.set_music_volume(0.8)
+LocalDataManager.set_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MUSIC_VOLUME, 0.8)
 ```
 
 设置总音量因子：
 
 ```gdscript
-LocalDataManager.set_master_volume_factor(0.6)
+LocalDataManager.set_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MASTER_VOLUME_FACTOR, 0.6)
 ```
 
 读取当前音效音量：
 
 ```gdscript
-var current_sfx_volume := LocalDataManager.sfx_volume
+var current_sfx_volume := LocalDataManager.get_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_SFX_VOLUME, 0.5)
+```
+
+直接读取本地配置：
+
+```gdscript
+var music_volume := LocalDataManager.get_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MUSIC_VOLUME, 0.5)
+```
+
+直接写入本地配置：
+
+```gdscript
+LocalDataManager.set_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MASTER_VOLUME_FACTOR, 0.6)
 ```
 
 清除指定字段：
 
 ```gdscript
-LocalDataManager.clear_data_item("audio", "music_volume")
+LocalDataManager.clear_data_item(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MUSIC_VOLUME)
 ```
 
 清除全部本地数据：

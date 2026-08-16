@@ -47,12 +47,12 @@ enum SFXType {
 
 ## 4. 音量计算方式
 
-`MusicManager` 不直接持久化音量数据，而是从 `LocalDataManager` 读取当前配置。
+`MusicManager` 不直接持久化音量数据，而是通过 `LocalDataManager.get_local_data()` 读取当前配置。
 
 当前计算方式：
 
-- 背景音乐音量 = `LocalDataManager.master_volume_factor * LocalDataManager.music_volume`
-- 音效音量 = `LocalDataManager.master_volume_factor * LocalDataManager.sfx_volume`
+- 背景音乐音量 = `master_volume_factor * music_volume`
+- 音效音量 = `master_volume_factor * sfx_volume`
 
 再通过 `linear_to_db()` 转换为 Godot 实际播放使用的 dB 值。
 
@@ -78,6 +78,15 @@ enum SFXType {
 - 创建临时 `AudioStreamPlayer`
 - 播放结束后自动释放节点
 
+### 刷新当前背景音乐音量
+
+- `refresh_music_volume() -> void`
+
+作用：
+
+- 根据当前本地配置重新计算并刷新正在播放的背景音乐音量
+- 通常在设置界面修改音量后调用
+
 ## 6. 调用示例
 
 播放主菜单背景音乐：
@@ -96,8 +105,8 @@ func _on_button_down() -> void:
 
 ## 7. 与 LocalDataManager 的关系
 
-- `MusicManager` 在 `_ready()` 中连接 `LocalDataManager.volumes_changed`
-- 当本地音量设置变化时，会刷新当前背景音乐音量
+- `MusicManager` 通过 `LocalDataManager.get_local_data()` 读取当前本地音量配置
+- 设置界面在写入本地数据后，会主动调用 `MusicManager.refresh_music_volume()`
 - 后续新播放的音效，也会按最新音量配置计算
 
 因此：

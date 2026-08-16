@@ -35,21 +35,24 @@ func _linear_to_db_safe(linear_value: float) -> float:
 # 返回值：
 # - 当前背景音乐应使用的 dB 音量值。
 func _get_music_volume_db() -> float:
-	return _linear_to_db_safe(LocalDataManager.master_volume_factor * LocalDataManager.music_volume)
+	var master_volume_factor := float(LocalDataManager.get_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MASTER_VOLUME_FACTOR, 0.5))
+	var music_volume := float(LocalDataManager.get_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MUSIC_VOLUME, 0.5))
+	return _linear_to_db_safe(master_volume_factor * music_volume)
 
 # 功能：根据当前设置计算音效的实际音量。
 # 返回值：
 # - 当前音效应使用的 dB 音量值。
 func _get_sfx_volume_db() -> float:
-	return _linear_to_db_safe(LocalDataManager.master_volume_factor * LocalDataManager.sfx_volume)
+	var master_volume_factor := float(LocalDataManager.get_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_MASTER_VOLUME_FACTOR, 0.5))
+	var sfx_volume := float(LocalDataManager.get_local_data(LocalDataKeys.SECTION_AUDIO, LocalDataKeys.KEY_SFX_VOLUME, 0.5))
+	return _linear_to_db_safe(master_volume_factor * sfx_volume)
 
 # 功能：同步当前背景音乐播放器的音量设置。
 func _ready() -> void:
-	current_player.volume_db = _get_music_volume_db()
-	LocalDataManager.volumes_changed.connect(_on_volumes_changed)
+	refresh_music_volume()
 
-# 功能：当本地音量设置变化时，刷新当前背景音乐播放器音量。
-func _on_volumes_changed() -> void:
+# 功能：根据当前本地配置刷新正在播放的背景音乐音量。
+func refresh_music_volume() -> void:
 	current_player.volume_db = _get_music_volume_db()
 
 # 功能：根据 MusicType 播放背景音乐；有正在播放的音乐时执行淡入淡出切换。
