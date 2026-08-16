@@ -12,13 +12,14 @@ config_version=5
 
 config/name="balatro"
 run/main_scene="uid://pqt1s1o5iedk"
-config/features=PackedStringArray("4.6", "GL Compatibility")
+config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
 
 GlobalEvent="*uid://bf4c3peyk8m3j"
 LocalDataManager="*uid://d0gtoe63kgh84"
 MusicManager="*uid://duox38a78cc8t"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
@@ -28,6 +29,10 @@ window/size/window_width_override=1920
 window/size/window_height_override=1080
 window/stretch/mode="canvas_items"
 window/stretch/scale_mode="integer"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg")
 
 [gui]
 
