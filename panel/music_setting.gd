@@ -27,3 +27,7 @@ func _on_music_vol_h_slider_value_changed(value: float) -> void:
 # - value: 0.0 到 1.0 的线性音量值。
 func _on_total_vol_h_slider_value_changed(value: float) -> void:
 	LocalDataManager.set_master_volume_factor(value)
+
+# 功能：点击关闭按钮后隐藏当前音乐设置界面。
+func _on_close_button_pressed() -> void:
+	visible = false

@@ -111,4 +111,4 @@ text = "退出
 
 [connection signal="button_down" from="MarginContainer/HBoxContainer/StartButton" to="." method="_on_start_button_button_down"]
 [connection signal="button_down" from="MarginContainer/HBoxContainer/OptionButton" to="." method="_on_option_button_button_down"]
-[connection signal="button_down" from="MarginContainer/HBoxContainer/ExitButton" to="." method="_on_start_button_button_down"]
+[connection signal="button_down" from="MarginContainer/HBoxContainer/ExitButton" to="." method="_on_exit_button_button_down"]

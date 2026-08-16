@@ -22,3 +22,7 @@ func _on_option_button_button_down() -> void:
 	if music_setting == null:
 		return
 	music_setting.visible = not music_setting.visible
+
+# 功能：处理“退出”按钮点击，退出当前游戏。
+func _on_exit_button_button_down() -> void:
+	get_tree().quit()
